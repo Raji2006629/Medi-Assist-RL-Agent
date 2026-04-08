@@ -1,6 +1,7 @@
- import os
-import sys
-import json
+ # inference.py
+import os
+from fastapi import FastAPI
+from pydantic import BaseModel
 from datetime import datetime
 
 # ==============================
@@ -19,7 +20,25 @@ STATE = {
 }
 
 # ==============================
-# Helper Functions
+# FastAPI Setup
+# ==============================
+app = FastAPI(title="MediAssistRL OpenEnv API")
+
+# ==============================
+# Request Models
+# ==============================
+class StepRequest(BaseModel):
+    user_input: str
+    mode: str = "Medium"
+
+class BookRequest(BaseModel):
+    name: str
+    age: int
+    problem: str
+    hospital: str
+
+# ==============================
+# Logging Helpers
 # ==============================
 def log_start(task_name):
     print(f"[START] Task: {task_name} | Timestamp: {datetime.now().isoformat()}")
@@ -34,8 +53,9 @@ def log_end(result):
     print(f"[END] Result: {result}")
 
 # ==============================
-# Reset Function (mandatory)
+# Reset Endpoint
 # ==============================
+@app.post("/reset")
 def reset():
     global STATE
     STATE = {"tasks_completed": 0, "last_response": ""}
@@ -44,46 +64,54 @@ def reset():
     return {"status": "ok"}
 
 # ==============================
-# Step Function (mandatory)
+# Step Endpoint
 # ==============================
-def step(user_input, mode="Medium"):
+@app.post("/step")
+def step(req: StepRequest):
     global STATE
-
     log_start("Step Execution")
 
-    # Example: simple AI response logic
-    response = ""
-    if mode == "Easy":
-        response = f"Easy advice for: {user_input}"
-    elif mode == "Medium":
-        response = f"Medium advice for: {user_input}. Please follow instructions seriously."
-    elif mode == "Hard":
-        response = f"Hard advice for: {user_input}. Immediate medical attention may be required."
+    # ==============================
+    # AI Response Logic (replace with real AI)
+    # ==============================
+    t = req.user_input.lower()
+    mode = req.mode
 
-    # Increment tasks completed
+    if mode == "Easy":
+        if "fever" in t:
+            response = "You may have fever. Take rest and hydrate."
+        elif "cough" in t:
+            response = "Use honey and steam inhalation."
+        else:
+            response = "Take rest and monitor symptoms."
+    elif mode == "Medium":
+        if "fever" in t:
+            response = "Fever detected. Monitor temperature and stay hydrated. Consider OTC meds."
+        elif "cough" in t:
+            response = "Cough detected. Steam inhalation and warm fluids recommended."
+        else:
+            response = "Serious advice: consult doctor if symptoms persist."
+    elif mode == "Hard":
+        response = f"Critical advice: Immediate medical attention may be required for '{t}'."
+
     STATE["tasks_completed"] += 1
     STATE["last_response"] = response
 
-    # Structured logging
-    log_step("Generated Response", reward=1.0)  # dummy reward
+    log_step("Generated Response", reward=1.0)
     log_end(response)
 
     return {"response": response, "tasks_completed": STATE["tasks_completed"]}
 
 # ==============================
-# State Function (mandatory)
+# State Endpoint
 # ==============================
+@app.get("/state")
 def state():
     return STATE
 
 # ==============================
-# Main Execution (for CLI testing)
+# Booking Endpoint (dummy)
 # ==============================
-if __name__ == "__main__":
-    reset()
-    while True:
-        inp = input("Enter symptom/task (or 'exit'): ")
-        if inp.lower() == "exit":
-            break
-        out = step(inp, mode="Medium")
-        print(out)
+@app.post("/book")
+def book(req: BookRequest):
+    return {"message": f"Appointment booked for {req.name} at {req.hospital}"}
