@@ -93,28 +93,36 @@ for t in tasks:
     res = step_fn(t["symptom"], t["mode"], t["book_hospital"])
     step(f"Task result: {res}")
     voice_speak(res)
+from fastapi import FastAPI
+from pydantic import BaseModel
 
-end("Sample inference tasks completed successfully")
-# ================================
-# OpenEnv Compliance for Hackathon
-# ================================
+app = FastAPI()
 
-# Reset environment
+# ================================
+# OpenEnv Models
+# ================================
+class Action(BaseModel):
+    action: str
+
+# ================================
+# OpenEnv Endpoints
+# ================================
+@app.post("/reset")
 def reset():
-    # Reset any internal state if needed
-    return {"status": "OK", "message": "Environment reset successful."}
+    return {"status": "OK", "message": "Environment reset successful"}
 
-# Step function (dummy example)
-def step(action):
-    # Process action here if you have RL/interaction
+@app.post("/step")
+def step(action: Action):
     print("[START] Step execution")
-    print("[STEP] Received action:", action)
+    print("[STEP] Received action:", action.action)
     # Example response
     result = {"reward": 1.0, "done": False, "info": "Step completed"}
     print("[END] Step execution")
     return result
 
-# Get current state
+@app.get("/state")
 def state():
-    # Return current environment state
     return {"state": "Idle", "message": "Waiting for input"}
+
+end("Sample inference tasks completed successfully")
+ 
