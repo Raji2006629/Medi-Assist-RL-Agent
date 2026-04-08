@@ -4,8 +4,7 @@ from app import chatbot  # assuming your app.py is in root
 
 # Mandatory for Hackathon OpenEnv
 def reset():
-    # Reset any states or variables your app uses
-    return {"status": "reset done"}
+    return {"status": "not implemented"}
 
 def step(user_input, mode="Easy"):
     response, audio = chatbot(user_input, mode)
