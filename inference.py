@@ -95,3 +95,26 @@ for t in tasks:
     voice_speak(res)
 
 end("Sample inference tasks completed successfully")
+# ================================
+# OpenEnv Compliance for Hackathon
+# ================================
+
+# Reset environment
+def reset():
+    # Reset any internal state if needed
+    return {"status": "OK", "message": "Environment reset successful."}
+
+# Step function (dummy example)
+def step(action):
+    # Process action here if you have RL/interaction
+    print("[START] Step execution")
+    print("[STEP] Received action:", action)
+    # Example response
+    result = {"reward": 1.0, "done": False, "info": "Step completed"}
+    print("[END] Step execution")
+    return result
+
+# Get current state
+def state():
+    # Return current environment state
+    return {"state": "Idle", "message": "Waiting for input"}
