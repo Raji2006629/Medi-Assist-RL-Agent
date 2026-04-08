@@ -111,7 +111,7 @@ To get a local copy of this project, use the following command:
 git clone https://github.com/Raji2006629/Medi-Assist-RL-Agent.git
 cd Medi-Assist-RL-Agent
 
-### 8.2 Install Dependencies
+ ### 8.2 Install Dependencies
 
 ```bash
 pip install transformers torch gymnasium gtts
