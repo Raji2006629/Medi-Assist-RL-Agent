@@ -1,0 +1,5 @@
+gradio==6.11.0
+transformers
+torch
+gtts
+requests
